@@ -1,17 +1,14 @@
 #pragma once
 #include <string>
-#include <vector>
 #include "Book.h"
 
 class Author{
 public:
-	Author(std::string name, std::string lastname, std::vector<Book> writtenBooks);
-	std::string getName();
-	std::string getLastname();
-	std::vector<Book> getWrittenBooks;
+	Author(const std::string& name, const std::string& lastname);
+	std::string getName() const;
+	std::string getLastname() const;
 private:
 	std::string name;
 	std::string lastname;
-	std::vector<Book> writtenBooks;
 };
 

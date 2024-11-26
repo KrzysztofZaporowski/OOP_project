@@ -1,21 +1,22 @@
 #pragma once
 #include <string>
-#include "Author.h"
 
 class Book{
 public:
-	Book(std::string title, int publishYear, long long isbn, bool isAvailable, Author author, int amountInLibrary);
-	std::string getTitle();
-	int getPublishYear();
-	//getAuthor
-	long long getIsbn();
-	bool getIsAvailable();
+	Book(std::string title, int publishYear, const std::string& authorName, const std::string& author_Lastname, long long isbn, int amountInLibrary);
+	std::string getTitle() const;
+	int getPublishYear() const;
+	std::string getAuthorName() const;
+	std::string getAuthorLastname() const;
+	long long getIsbn() const;
+	bool getIsAvailable() const;
 private:
 	std::string title;
 	int publishYear;
 	long long isbn;
 	bool isAvailable;
-	Author author;
+	std::string authorName;
+	std::string authorLastname;
 	int amountInLibrary;
 };
 

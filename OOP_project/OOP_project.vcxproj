@@ -140,6 +140,7 @@
     <ClCompile Include="Author.cpp" />
     <ClCompile Include="Book.cpp" />
     <ClCompile Include="BookDb.cpp" />
+    <ClCompile Include="LibraryCollections.cpp" />
     <ClCompile Include="Reader.cpp" />
     <ClCompile Include="Rental.cpp" />
     <ClCompile Include="User.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="Author.h" />
     <ClInclude Include="Book.h" />
     <ClInclude Include="BookDb.h" />
+    <ClInclude Include="LibraryCollections.h" />
     <ClInclude Include="Reader.h" />
     <ClInclude Include="Rental.h" />
     <ClInclude Include="User.h" />
