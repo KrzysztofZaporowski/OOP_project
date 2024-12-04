@@ -1,23 +1,17 @@
 #pragma once
 #include <string>
+#include <iostream>
 
 class User{
 public:
-	User(std::string login, std::string password, std::string name, std::string lastname, std::string email);
-	bool logIn(std::string login, std::string password);
-	bool logOut(std::string login, std::string password);
-	std::string getLogin();
-	std::string getPassword();
-	std::string getName();
-	std::string getLastname();
-	void setLogin();
-	void setPassword();
-	void setEmail();
+	User(std::string login, std::string password, std::string nickname);
+	virtual void displayInfo();
+	std::string getLogin() const;
+	std::string getNick() const;
+	std::string getPassword() const;
 protected:
 	std::string login;
 	std::string password;
-	std::string name;
-	std::string lastname;
-	std::string email;
+	std::string nickname;
 };
 

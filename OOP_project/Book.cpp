@@ -1,39 +1,45 @@
 #include "Book.h"
 
-Book::Book(std::string title, int publishYear, const std::string& authorName, const std::string& authorLastname, long long isbn, int amountInLibrary):title(title),
-	publishYear(publishYear), authorName(authorName), authorLastname(authorLastname), isbn(isbn), amountInLibrary(amountInLibrary) {
-	if (amountInLibrary > 0){
-		isAvailable = true;
-	}
-	else {
-		isAvailable = false;
-	}
-}
+Book::Book(std::string isbn, std::string title, std::string authorName, std::string authorLastName, int publishYear, int availableCopies) : 
+	isbn(isbn), title(title), authorName(authorName), authorLastName(authorLastName), publishYear(publishYear), availableCopies(availableCopies){}
 
-std::string Book::getTitle() const {
-	return title;
-}
-
-int Book::getPublishYear() const {
-	return publishYear;
-}
-
-std::string Book::getAuthorName() const {
-	return authorName;
-}
-
-std::string Book::getAuthorLastname() const {
-	return authorLastname;
-}
-
-long long Book::getIsbn() const {
+std::string Book::getISBN() const{
 	return isbn;
 }
 
-bool Book::getIsAvailable() const {
-	return isAvailable;
+std::string Book::getTitle() const{
+	return title;
 }
 
+int Book::getPublishYear() const{
+	return publishYear;
+}
 
+std::string Book::getAuthorName() const{
+	return authorName;
+}
 
+std::string Book::getAuthorLastname() const{
+	return authorLastName;
+}
 
+int Book::getAvailableCopies() const{
+	return availableCopies;
+}
+
+void Book::setAvailableCopies(int amount){
+	availableCopies = amount;
+}
+
+void Book::displayBookInfo() const{
+	std::cout << "Book info:" << std::endl <<
+		"Title: " << title << std::endl <<
+		"Author: " << authorName << " " << authorLastName << std::endl <<
+		"Publish year: " << publishYear << std::endl <<
+		"ISBN: " << isbn << std::endl <<
+		"Copies in library: " << availableCopies << std::endl;
+}
+
+bool Book::operator==(const Book& other) const{
+	return title == other.title && isbn == other.isbn;
+}

@@ -1,20 +1,15 @@
-#include <iostream> 
-#include "BookDb.h"
+#include <iostream>
+#include <vector>
+#include <tuple>
+#include <iostream>
 #include "Book.h"
-#include "LibraryCollections.h"
+#include "User.h"
+#include "Reader.h"
+#include "LibraryDB.h"
 
+int main(){
+	while (true){
 
-using namespace std;
-int main()
-{
-	BookDb db("tcp://localhost:3306", "root", "Krzysiu13", "library");
-	LibraryCollections collection(db.listBooks());
-	for (const auto& book : collection.getLibraryCollection()) {
-		std::cout << book.getTitle() << ", " <<
-			book.getPublishYear() << ", " <<
-			book.getAuthorName() << " " << book.getAuthorLastname() << ", " <<
-			book.getIsbn() << ", " <<
-			book.getIsAvailable() << std::endl;
 	}
 
 	return 0;

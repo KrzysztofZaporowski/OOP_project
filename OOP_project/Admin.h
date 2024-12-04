@@ -1,16 +1,16 @@
 #pragma once
-#include "User.h"
-#include "Book.h"
 #include <string>
 #include <vector>
+#include "User.h"
+#include "Reader.h"
 
 class Admin : public User{
 public:
-	void addBook(Book book);
-	void deleteBook(Book book);
-	void upgrateBookInfo(Book book);
-	void accountsMenagement();
-private:
-	std::vector<Book> bookList;
+	Admin(std::string login, std::string password, std::string nickname);
+	bool addUser(std::vector<Reader>& readers, const Reader& reader);
+	bool deleteUser(std::vector<Reader>& readers, const Reader& reader);
+	void updateBookCopiesNumber(Book& book, int new_amount);
+	bool addBook(std::vector<Book>& books, const Book& book);
+	bool deleteBook(std::vector<Book>& books, const Book& book);
 };
 
