@@ -112,7 +112,7 @@ void Reader::displayBorrowHistory() const{
 }
 
 void Reader::displayInfo(){
-	std::cout << "You are logged as reader." << std::endl << "Login: " << login << ", nickname: " << nickname << std::endl;
+	std::cout << "Reader. Login: " << login << ", nickname: " << nickname << std::endl;
 }
 
 bool Reader::operator==(const Reader& other) const{

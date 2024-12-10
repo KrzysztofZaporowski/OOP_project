@@ -1,9 +1,8 @@
-
+#include "MenuHandler.h"
 
 int main(){
-	while (true){
-
-	}
+	MenuHandler menuHandler;
+	menuHandler.menu();
 
 	return 0;
 }

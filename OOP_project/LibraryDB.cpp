@@ -106,20 +106,21 @@ std::vector<LibraryDB::Item> LibraryDB::getBorrowedBooks(){
     return borrowedBooks;
 }
 
-void LibraryDB::saveBooksToDB(std::vector<Book>& books){
+void LibraryDB::saveBooksToDB(std::vector<Book>& books) {
     try {
         sql::mysql::MySQL_Driver* driver = sql::mysql::get_mysql_driver_instance();
         std::unique_ptr<sql::Connection> con(driver->connect("tcp://127.0.0.1:3306", username, password));
         con->setSchema(databaseName);
 
-        const std::string query =
+        const std::string clearTableQuery = "DELETE FROM " + tableBooksName;
+        std::unique_ptr<sql::Statement> stmt(con->createStatement());
+        stmt->executeUpdate(clearTableQuery);
+
+        const std::string insertQuery =
             "INSERT INTO " + tableBooksName + " (isbn, title, publish_year, author_name, author_lastname, available_copies) "
-            "VALUES (?, ?, ?, ?, ?, ?) "
-            "ON DUPLICATE KEY UPDATE title = VALUES(title), publish_year = VALUES(publish_year), "
-            "author_name = VALUES(author_name), author_lastname = VALUES(author_lastname), available_copies = VALUES(available_copies);";
+            "VALUES (?, ?, ?, ?, ?, ?)";
 
-        std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement(query));
-
+        std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement(insertQuery));
         for (const auto& book : books) {
             pstmt->setString(1, book.getISBN());
             pstmt->setString(2, book.getTitle());
@@ -138,19 +139,21 @@ void LibraryDB::saveBooksToDB(std::vector<Book>& books){
     }
 }
 
-void LibraryDB::saveAdminsToDB(std::vector<Admin>& admins){
+
+void LibraryDB::saveAdminsToDB(std::vector<Admin>& admins) {
     try {
         sql::mysql::MySQL_Driver* driver = sql::mysql::get_mysql_driver_instance();
         std::unique_ptr<sql::Connection> con(driver->connect("tcp://127.0.0.1:3306", username, password));
         con->setSchema(databaseName);
 
-        const std::string query =
-            "INSERT INTO " + tableAdminsName + " (login, password, nick) "
-            "VALUES (?, ?, ?) "
-            "ON DUPLICATE KEY UPDATE password = VALUES(password), nick = VALUES(nick);";
+        const std::string clearTableQuery = "DELETE FROM " + tableAdminsName;
+        std::unique_ptr<sql::Statement> stmt(con->createStatement());
+        stmt->executeUpdate(clearTableQuery);
 
-        std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement(query));
+        const std::string insertQuery =
+            "INSERT INTO " + tableAdminsName + " (login, password, nick) VALUES (?, ?, ?)";
 
+        std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement(insertQuery));
         for (const auto& admin : admins) {
             pstmt->setString(1, admin.getLogin());
             pstmt->setString(2, admin.getPassword());
@@ -166,19 +169,21 @@ void LibraryDB::saveAdminsToDB(std::vector<Admin>& admins){
     }
 }
 
-void LibraryDB::saveReadersToDB(std::vector<Reader>& readers){
+
+void LibraryDB::saveReadersToDB(std::vector<Reader>& readers) {
     try {
         sql::mysql::MySQL_Driver* driver = sql::mysql::get_mysql_driver_instance();
         std::unique_ptr<sql::Connection> con(driver->connect("tcp://127.0.0.1:3306", username, password));
         con->setSchema(databaseName);
 
-        const std::string query =
-            "INSERT INTO " + tableReadersName + " (login, password, nick) "
-            "VALUES (?, ?, ?) "
-            "ON DUPLICATE KEY UPDATE password = VALUES(password), nick = VALUES(nick);";
+        const std::string clearTableQuery = "DELETE FROM " + tableReadersName;
+        std::unique_ptr<sql::Statement> stmt(con->createStatement());
+        stmt->executeUpdate(clearTableQuery);
 
-        std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement(query));
+        const std::string insertQuery =
+            "INSERT INTO " + tableReadersName + " (login, password, nick) VALUES (?, ?, ?)";
 
+        std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement(insertQuery));
         for (const auto& reader : readers) {
             pstmt->setString(1, reader.getLogin());
             pstmt->setString(2, reader.getPassword());
@@ -200,33 +205,23 @@ void LibraryDB::saveToRentingHistoryTable(std::vector<Item>& renting) {
         std::unique_ptr<sql::Connection> con(driver->connect("tcp://127.0.0.1:3306", username, password));
         con->setSchema(databaseName);
 
-        // Query to insert or update rows in the renting_history table
-        std::string query =
+        const std::string clearTableQuery = "DELETE FROM renting_history";
+        std::unique_ptr<sql::Statement> stmt(con->createStatement());
+        stmt->executeUpdate(clearTableQuery);
+
+        const std::string insertQuery =
             "INSERT INTO renting_history (user_login, book_isbn, book_title, return_day, return_month, return_year) "
-            "VALUES (?, ?, ?, ?, ?, ?) "
-            "ON DUPLICATE KEY UPDATE "
-            "return_day = VALUES(return_day), "
-            "return_month = VALUES(return_month), "
-            "return_year = VALUES(return_year)";
+            "VALUES (?, ?, ?, ?, ?, ?)";
 
-        std::unique_ptr<sql::PreparedStatement> stmt(con->prepareStatement(query));
-
+        std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement(insertQuery));
         for (const auto& record : renting) {
-            std::string user_login = record.login;
-            std::string book_isbn = record.isbn;
-            std::string book_title = record.title;
-            int return_day = record.day;
-            int return_month = record.month;
-            int return_year = record.year;
-
-            stmt->setString(1, user_login);
-            stmt->setString(2, book_isbn);
-            stmt->setString(3, book_title);
-            stmt->setInt(4, return_day);
-            stmt->setInt(5, return_month);
-            stmt->setInt(6, return_year);
-
-            stmt->executeUpdate();
+            pstmt->setString(1, record.login);
+            pstmt->setString(2, record.isbn);
+            pstmt->setString(3, record.title);
+            pstmt->setInt(4, record.day);
+            pstmt->setInt(5, record.month);
+            pstmt->setInt(6, record.year);
+            pstmt->executeUpdate();
         }
     }
     catch (sql::SQLException& e) {
@@ -237,41 +232,29 @@ void LibraryDB::saveToRentingHistoryTable(std::vector<Item>& renting) {
     }
 }
 
-
-
 void LibraryDB::saveToBorrowedBooksTable(std::vector<Item>& borrowed) {
     try {
         sql::mysql::MySQL_Driver* driver = sql::mysql::get_mysql_driver_instance();
         std::unique_ptr<sql::Connection> con(driver->connect("tcp://127.0.0.1:3306", username, password));
         con->setSchema(databaseName);
 
-        // Query to insert or update rows in the borrowed_books table
-        std::string query =
+        const std::string clearTableQuery = "DELETE FROM borrowed_books";
+        std::unique_ptr<sql::Statement> stmt(con->createStatement());
+        stmt->executeUpdate(clearTableQuery);
+
+        const std::string insertQuery =
             "INSERT INTO borrowed_books (user_login, book_isbn, book_title, due_day, due_month, due_year) "
-            "VALUES (?, ?, ?, ?, ?, ?) "
-            "ON DUPLICATE KEY UPDATE "
-            "due_day = VALUES(due_day), "
-            "due_month = VALUES(due_month), "
-            "due_year = VALUES(due_year)";
+            "VALUES (?, ?, ?, ?, ?, ?)";
 
-        std::unique_ptr<sql::PreparedStatement> stmt(con->prepareStatement(query));
-
+        std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement(insertQuery));
         for (const auto& record : borrowed) {
-            std::string user_login = record.login;
-            std::string book_isbn = record.isbn;
-            std::string book_title = record.title;
-            int due_day = record.day;
-            int due_month = record.month;
-            int due_year = record.year;
-
-            stmt->setString(1, user_login);
-            stmt->setString(2, book_isbn);
-            stmt->setString(3, book_title);
-            stmt->setInt(4, due_day);
-            stmt->setInt(5, due_month);
-            stmt->setInt(6, due_year);
-
-            stmt->executeUpdate();
+            pstmt->setString(1, record.login);
+            pstmt->setString(2, record.isbn);
+            pstmt->setString(3, record.title);
+            pstmt->setInt(4, record.day);
+            pstmt->setInt(5, record.month);
+            pstmt->setInt(6, record.year);
+            pstmt->executeUpdate();
         }
     }
     catch (sql::SQLException& e) {
@@ -281,5 +264,6 @@ void LibraryDB::saveToBorrowedBooksTable(std::vector<Item>& borrowed) {
             << std::endl;
     }
 }
+
 
 

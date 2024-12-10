@@ -86,7 +86,7 @@ bool Admin::deleteAdmin(std::vector<Admin>& admins, const Admin& admin){
 }
 
 void Admin::displayInfo(){
-	std::cout << "You are logged as admin." << std::endl << "Login: " << login << ", nickname: " << nickname << std::endl;
+	std::cout << "Admin. Login: " << login << ", nickname: " << nickname << std::endl;
 }
 
 bool Admin::operator==(const Admin& other) const{
