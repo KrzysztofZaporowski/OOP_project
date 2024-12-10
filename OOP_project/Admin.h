@@ -12,5 +12,9 @@ public:
 	void updateBookCopiesNumber(Book& book, int new_amount);
 	bool addBook(std::vector<Book>& books, const Book& book);
 	bool deleteBook(std::vector<Book>& books, const Book& book);
+	bool addAdmin(std::vector<Admin>& admins, const Admin& admin);
+	bool deleteAdmin(std::vector<Admin>& admins, const Admin& admin);
+	void displayInfo() override;
+	bool operator==(const Admin& other) const;
 };
 

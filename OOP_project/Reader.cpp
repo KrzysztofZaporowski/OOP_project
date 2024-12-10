@@ -10,11 +10,11 @@ void Reader::setRentingHistory(std::vector<Item> history){
 	rentingHistory = history;
 }
 
-std::vector<Item> Reader::getRentingHistory(){
+std::vector<Reader::Item> Reader::getRentingHistory(){
 	return rentingHistory;
 }
 
-std::vector<Item> Reader::getBorrowedBooks(){
+std::vector<Reader::Item> Reader::getBorrowedBooks(){
 	return borrowedBooks;
 }
 
@@ -48,7 +48,7 @@ void Reader::returnBook(Book& book){
 	int currentYear = currentDate->tm_year + 1900;
 	
 	auto it = std::find_if(borrowedBooks.begin(), borrowedBooks.end(), [&](const auto& borrowedBook) {
-		return std::get<0>(borrowedBook) == book.getTitle();
+		return static_cast<Item>(borrowedBook).title == book.getTitle();
 		});
 	if (it != borrowedBooks.end()) {
 		int dueDay = static_cast<Item>(*it).day;
@@ -109,6 +109,10 @@ void Reader::displayBorrowHistory() const{
 	else {
 		std::cout << "Your renting history is empty." << std::endl;
 	}
+}
+
+void Reader::displayInfo(){
+	std::cout << "You are logged as reader." << std::endl << "Login: " << login << ", nickname: " << nickname << std::endl;
 }
 
 bool Reader::operator==(const Reader& other) const{

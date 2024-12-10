@@ -12,19 +12,20 @@
 #include "Reader.h"
 #include "Admin.h"
 
-struct Item {
-	std::string login;
-	std::string isbn;
-	std::string title;
-	int day;
-	int month;
-	int year;
-};
+
 
 class LibraryDB{
 public:
 	LibraryDB(std::string username, std::string password, std::string databaseName, std::string tableBooksName, std::string tableReadersName,
 		std::string tableAdminsName, std::string rentingHistorytableName, std::string borrowedBooksTableName);
+	struct Item {
+		std::string login;
+		std::string isbn;
+		std::string title;
+		int day;
+		int month;
+		int year;
+	};
 	void loadData();
 	std::vector<Book> getBooks();
 	std::vector<Admin> getAdmins();

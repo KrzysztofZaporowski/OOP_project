@@ -29,6 +29,9 @@
     <ClCompile Include="LibraryDB.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
+    <ClCompile Include="MenuHandler.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="User.h" />
@@ -36,5 +39,6 @@
     <ClInclude Include="Book.h" />
     <ClInclude Include="Admin.h" />
     <ClInclude Include="LibraryDB.h" />
+    <ClInclude Include="MenuHandler.h" />
   </ItemGroup>
 </Project>

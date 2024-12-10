@@ -98,11 +98,11 @@ std::vector<Reader> LibraryDB::getReaders(){
 	return readers;
 }
 
-std::vector<Item> LibraryDB::getRentingHistory(){
+std::vector<LibraryDB::Item> LibraryDB::getRentingHistory(){
     return rentingHistory;
 }
 
-std::vector<Item> LibraryDB::getBorrowedBooks(){
+std::vector<LibraryDB::Item> LibraryDB::getBorrowedBooks(){
     return borrowedBooks;
 }
 

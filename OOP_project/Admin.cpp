@@ -61,4 +61,36 @@ bool Admin::deleteBook(std::vector<Book>& books, const Book& book){
 	return false;
 }
 
+bool Admin::addAdmin(std::vector<Admin>& admins, const Admin& admin){
+	for (const auto& existingAdmin : admins) {
+		if (existingAdmin == admin) {
+			std::cout << "Admin with this login already exists!" << std::endl;
+			return false;
+		}
+	}
+	admins.push_back(admin);
+	std::cout << "Reader " << admin.getNick() << " was added!" << std::endl;
+	return true;
+}
+
+bool Admin::deleteAdmin(std::vector<Admin>& admins, const Admin& admin){
+	for (const auto& existingAdmin : admins) {
+		if (admin == existingAdmin) {
+			admins.erase(std::remove(admins.begin(), admins.end(), admin), admins.end());
+			std::cout << "Admin " << admin.getNick() << " has been succesfully deleted!" << std::endl;
+			return true;
+		}
+	}
+	std::cout << "User " << admin.getNick() << " can't be deleted. Are you sure you gave good data, because this admin doesn't exit in our databse." << std::endl;
+	return false;
+}
+
+void Admin::displayInfo(){
+	std::cout << "You are logged as admin." << std::endl << "Login: " << login << ", nickname: " << nickname << std::endl;
+}
+
+bool Admin::operator==(const Admin& other) const{
+	return login == other.login && nickname == other.nickname;
+}
+
 
