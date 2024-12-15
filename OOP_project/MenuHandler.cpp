@@ -18,6 +18,15 @@ void MenuHandler::menu(){
 		std::cout << "Choose what you want to do:" << std::endl <<
 			"1. Log in" << std::endl << "2. Sign in" << std::endl << "3. Quit" << std::endl << "(write 1, 2 or 3)" << std::endl;
 		std::cin >> choice;
+		if (std::cin.fail()) {
+			std::cout << "Invalid input! Please enter a number." << std::endl;
+
+			std::cin.clear();
+
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+			continue;
+		}
 		std::cout << std::endl;
 		switch (choice) {
 		case 1:
@@ -181,6 +190,7 @@ void MenuHandler::readerOperations(std::vector<Book>& books, Reader& reader){
 			case 1:
 				found = false;
 				std::cout << "Enter title of book you want to rent: " << std::endl;
+				std::cin.ignore();
 				std::getline(std::cin, title);
 				for (auto& b : books) {
 					if (b.getTitle() == title){
@@ -219,6 +229,7 @@ void MenuHandler::readerOperations(std::vector<Book>& books, Reader& reader){
 			break;
 		case 2:
 			std::cout << "Enter title of book you want to return: " << std::endl;
+			std::cin.ignore();
 			std::getline(std::cin, title);
 			for (auto& b : books) {
 				if (b.getTitle() == title) {

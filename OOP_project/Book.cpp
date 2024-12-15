@@ -41,5 +41,5 @@ void Book::displayBookInfo() const{
 }
 
 bool Book::operator==(const Book& other) const{
-	return title == other.title && isbn == other.isbn;
+	return title == other.title || isbn == other.isbn;
 }

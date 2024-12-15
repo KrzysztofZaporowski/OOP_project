@@ -90,7 +90,7 @@ void Admin::displayInfo(){
 }
 
 bool Admin::operator==(const Admin& other) const{
-	return login == other.login && nickname == other.nickname;
+	return login == other.login || nickname == other.nickname;
 }
 
 

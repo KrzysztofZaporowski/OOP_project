@@ -116,5 +116,5 @@ void Reader::displayInfo(){
 }
 
 bool Reader::operator==(const Reader& other) const{
-	return login == other.login && nickname == other.nickname;
+	return login == other.login || nickname == other.nickname;
 }
