@@ -25,6 +25,14 @@ public:
 		int day;
 		int month;
 		int year;
+		bool operator==(const Item& other) const {
+			return login == other.login &&
+				isbn == other.isbn &&
+				title == other.title &&
+				day == other.day &&
+				month == other.month &&
+				year == other.year;
+		}
 	};
 	void loadData();
 	std::vector<Book> getBooks();

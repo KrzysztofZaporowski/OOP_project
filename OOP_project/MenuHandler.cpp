@@ -34,6 +34,15 @@ void MenuHandler::menu(){
 				int userType;
 				std::cout << "You want to log as:" << std::endl << "1. Reader" << std::endl << "2. Admin" << std::endl << "3. Quit to menu" << std::endl;
 				std::cin >> userType;
+				if (std::cin.fail()) {
+					std::cout << "Invalid input! Please enter a number." << std::endl;
+
+					std::cin.clear();
+
+					std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+					continue;
+				}
 				std::cout << std::endl;
 				switch (userType) {
 				case 1:
@@ -153,7 +162,7 @@ void MenuHandler::readerLogIn(std::vector<Reader>& readers, std::vector<Book>& b
 				}
 			}
 			reader->setBorrowedBooks(borrowed);
-			readerOperations(books, *reader);
+			readerOperations(books, *reader, borrowedBooks, rentingHistory);
 			break;
 		}
 		else {
@@ -162,7 +171,7 @@ void MenuHandler::readerLogIn(std::vector<Reader>& readers, std::vector<Book>& b
 	}
 }
 
-void MenuHandler::readerOperations(std::vector<Book>& books, Reader& reader){
+void MenuHandler::readerOperations(std::vector<Book>& books, Reader& reader, std::vector<LibraryDB::Item>& borrowed, std::vector<LibraryDB::Item>& renting){
 	int userType;
 	std::string title, isbn, authorName, authorLastname;
 	bool found;
@@ -195,7 +204,15 @@ void MenuHandler::readerOperations(std::vector<Book>& books, Reader& reader){
 				for (auto& b : books) {
 					if (b.getTitle() == title){
 						found = true;
-						reader.borrowBook(b);
+						Reader::OutItem item = reader.borrowBook(b);
+						LibraryDB::Item save;
+						save.login = item.login;
+						save.isbn = item.ISBN;
+						save.title = item.title;
+						save.day = item.day;
+						save.month = item.month;
+						save.year = item.year;
+						borrowed.push_back(save);
 						break;
 					}
 				}
@@ -211,7 +228,15 @@ void MenuHandler::readerOperations(std::vector<Book>& books, Reader& reader){
 				for (auto& b : books) {
 					if (b.getISBN() == isbn) {
 						found = true;
-						reader.borrowBook(b);
+						Reader::OutItem item = reader.borrowBook(b);
+						LibraryDB::Item save;
+						save.login = item.login;
+						save.isbn = item.ISBN;
+						save.title = item.title;
+						save.day = item.day;
+						save.month = item.month;
+						save.year = item.year;
+						borrowed.push_back(save);
 						break;
 					}
 				}
@@ -234,7 +259,20 @@ void MenuHandler::readerOperations(std::vector<Book>& books, Reader& reader){
 			for (auto& b : books) {
 				if (b.getTitle() == title) {
 					found = true;
-					reader.returnBook(b);
+					std::pair<Reader::OutItem, Reader::OutItem> toSave = reader.returnBook(b);
+					Reader::OutItem addToBorrowedBook = toSave.first;
+					Reader::OutItem addToRentingHistory = toSave.second;
+					LibraryDB::Item item = { addToBorrowedBook.login, addToBorrowedBook.ISBN, addToBorrowedBook.title, addToBorrowedBook.day, addToBorrowedBook.month, addToBorrowedBook.year };
+					auto it = std::find(borrowed.begin(), borrowed.end(), item);
+					if (it != borrowed.end()) {
+						borrowed.erase(it); 
+						std::cout << "Book returned successfully!" << std::endl;
+						LibraryDB::Item history = { addToRentingHistory.login, addToRentingHistory.ISBN, addToRentingHistory.title, addToRentingHistory.day, addToRentingHistory.month, addToRentingHistory.year };
+						renting.push_back(history);
+					}
+					else {
+						std::cout << "Book not found in borrowed list!" << std::endl;
+					}
 					break;
 				}
 			}
@@ -411,39 +449,80 @@ void MenuHandler::adminOperations(std::vector<Reader>& readers, std::vector<Admi
 
 		switch (userType) {
 		case 1:
-			std::cout << "Enter reader login, passoword and nick of new reader (separated by space)" << std::endl;
-			std::cin >> login >> password >> nick;
-			std::cout << std::endl;
-			{
-				Reader reader(login, password, nick);  
-				admin.addUser(readers, reader);
+			int youSure;
+			std::cout << "Are you sure you want to add new reader? (1 - Yes / 2 - No)" << std::endl;
+			std::cin >> youSure;
+			if (youSure == 1) {
+				std::cout << "Enter reader login, passoword and nick of new reader (separated by space)" << std::endl;
+				std::cin >> login >> password >> nick;
+				std::cout << std::endl;
+				{
+					Reader reader(login, password, nick);
+					admin.addUser(readers, reader);
+				}
+			}
+			else if (youSure == 2){
+				std::cout << "Operation cancelled." << std::endl;
+			}
+			else {
+				std::cout << "Invalid input. Please enter 1 to confirm or 2 to cancel." << std::endl;
 			}
 			break;  
 		case 2:
-			std::cout << "Enter reader login, passoword and nick of reader you want to delete (separated by space)" << std::endl;
-			std::cin >> login >> password >> nick;
-			std::cout << std::endl;
-			{
-				Reader reader(login, password, nick);
-				admin.deleteUser(readers, reader);
+			std::cout << "Are you sure you want to delete reader? (1 - Yes / 2 - No)" << std::endl;
+			std::cin >> youSure;
+			if (youSure == 1) {
+				std::cout << "Enter reader login, passoword and nick of reader you want to delete (separated by space)" << std::endl;
+				std::cin >> login >> password >> nick;
+				std::cout << std::endl;
+				{
+					Reader reader(login, password, nick);
+					admin.deleteUser(readers, reader);
+				}
+			}
+			else if (youSure == 2) {
+				std::cout << "Operation cancelled." << std::endl;
+			}
+			else {
+				std::cout << "Invalid input. Please enter 1 to confirm or 2 to cancel." << std::endl;
 			}
 			break;  
 		case 3:
-			std::cout << "Enter reader login, passoword and nick of new admin (separated by space)" << std::endl;
-			std::cin >> login >> password >> nick;
-			std::cout << std::endl;
-			{
-				Admin newAdmin(login, password, nick);
-				admin.addAdmin(admins, newAdmin);
+			std::cout << "Are you sure you want to add new admin? (1 - Yes / 2 - No)" << std::endl;
+			std::cin >> youSure;
+			if (youSure == 1) {
+				std::cout << "Enter reader login, passoword and nick of new admin (separated by space)" << std::endl;
+				std::cin >> login >> password >> nick;
+				std::cout << std::endl;
+				{
+					Admin newAdmin(login, password, nick);
+					admin.addAdmin(admins, newAdmin);
+				}
+			}
+			else if (youSure == 2) {
+				std::cout << "Operation cancelled." << std::endl;
+			}
+			else {
+				std::cout << "Invalid input. Please enter 1 to confirm or 2 to cancel." << std::endl;
 			}
 			break;  
 		case 4:
-			std::cout << "Enter reader login, passoword and nick of admin you want to delete (separated by space)" << std::endl;
-			std::cin >> login >> password >> nick;
-			std::cout << std::endl;
-			{
-				Admin deleteAdmin(login, password, nick);
-				admin.deleteAdmin(admins, deleteAdmin);
+			std::cout << "Are you sure you want to delete admin? (1 - Yes / 2 - No)" << std::endl;
+			std::cin >> youSure;
+			if (youSure == 1) {
+				std::cout << "Enter reader login, passoword and nick of admin you want to delete (separated by space)" << std::endl;
+				std::cin >> login >> password >> nick;
+				std::cout << std::endl;
+				{
+					Admin deleteAdmin(login, password, nick);
+					admin.deleteAdmin(admins, deleteAdmin);
+				}
+			}
+			else if (youSure == 2) {
+				std::cout << "Operation cancelled." << std::endl;
+			}
+			else {
+				std::cout << "Invalid input. Please enter 1 to confirm or 2 to cancel." << std::endl;
 			}
 			break;  
 		case 5:

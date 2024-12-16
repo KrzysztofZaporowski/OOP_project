@@ -18,29 +18,49 @@ std::vector<Reader::Item> Reader::getBorrowedBooks(){
 	return borrowedBooks;
 }
 
-void Reader::borrowBook(Book& book){
+Reader::OutItem Reader::borrowBook(Book& book){
 	if (book.getAvailableCopies() > 0) {
 		book.setAvailableCopies(book.getAvailableCopies() - 1);
-		std::time_t now = std::time(0);
+		std::time_t now = std::time(nullptr);
 		std::tm* local_time = std::localtime(&now);
-		int day = local_time->tm_mday;        
-		int month = local_time->tm_mon + 1;   
+		int day = local_time->tm_mday;
+		int month = local_time->tm_mon + 1; 
 		int year = local_time->tm_year + 1900;
-		local_time->tm_mon += 1;
-		std::mktime(local_time);
+		/// There is new logic because there was problem when due date was in next year
+		month += 1; // Increment the month
+		if (month > 12) { // Adjust year and month if overflow
+			month = 1;
+			year += 1;
+		}
 
-		int newDay = local_time->tm_mday;
-		int newMonth = local_time->tm_mon + 1; 
-		int newYear = local_time->tm_year + 1900;
-		borrowedBooks.push_back({ book.getTitle(), newDay, newMonth, newYear });
-		std::cout << "Book borrowed until: " << newDay << "." << newMonth << "." << newYear << std::endl;
+		// Handle edge cases for days
+		static const int daysInMonth[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+		if (month == 2 && (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0))) {
+			// Leap year for February
+			if (day > 29) day = 29;
+		}
+		else if (day > daysInMonth[month - 1]) {
+			day = daysInMonth[month - 1];
+		}
+
+		OutItem out;
+		out.login = login;
+		out.ISBN = book.getISBN();
+		out.title = book.getTitle();
+		out.day = day;
+		out.month = month;
+		out.year = year;
+		borrowedBooks.push_back({ book.getTitle(), day, month, year });
+		std::cout << "Book borrowed until: " << day << "." << month << "." << year << std::endl;
+		return out;
 	}
 	else {
 		std::cout << "Borrowed failed!" << std::endl;
+		return {};
 	}
 }
 
-void Reader::returnBook(Book& book){
+std::pair<Reader::OutItem, Reader::OutItem> Reader::returnBook(Book& book){
 	std::time_t t = std::time(nullptr);
 	std::tm* currentDate = std::localtime(&t);
 	int currentDay = currentDate->tm_mday;
@@ -53,7 +73,7 @@ void Reader::returnBook(Book& book){
 	if (it != borrowedBooks.end()) {
 		int dueDay = static_cast<Item>(*it).day;
 		int dueMonth = static_cast<Item>(*it).month;
-		int dueYear = static_cast<Item>(*it).month;
+		int dueYear = static_cast<Item>(*it).year;
 
 		std::tm dueDate = {};
 		dueDate.tm_mday = dueDay;
@@ -64,9 +84,23 @@ void Reader::returnBook(Book& book){
 		std::time_t currentTime = std::mktime(currentDate);
 
 		int daysDifference = std::difftime(currentTime, dueTime) / (60 * 60 * 24);
+		OutItem outBorrowed, outHistory;
+		outBorrowed.login = login;
+		outBorrowed.ISBN = book.getISBN();
+		outBorrowed.title = book.getTitle();
+		outBorrowed.day = dueDay;
+		outBorrowed.month = dueMonth;
+		outBorrowed.year = dueYear;
+		outHistory.login = login;
+		outHistory.ISBN = book.getISBN();
+		outHistory.title = book.getTitle();
+		outHistory.day = currentDay;
+		outHistory.month = currentMonth;
+		outHistory.year = currentYear;
 
 		borrowedBooks.erase(it); 
 		rentingHistory.push_back({ book.getTitle(), currentDay, currentMonth, currentYear });
+
 		std::cout << "Book '" << book.getTitle() << "' returned successfully." << std::endl;
 		if (daysDifference < 0){
 			std::cout << "Congratulation! You returned this book: " << -daysDifference << " days before due date which was: " <<
@@ -81,9 +115,12 @@ void Reader::returnBook(Book& book){
 		}
 
 		book.setAvailableCopies(book.getAvailableCopies() + 1);
+		return { outBorrowed, outHistory};
 	}
 	else {
 		std::cout << "Book '" << book.getTitle() << "' not found in borrowed books." << std::endl;
+		OutItem outBorrowed, outHistory;
+		return { outBorrowed, outHistory };
 	}
 }
 
