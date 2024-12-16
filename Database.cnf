@@ -1,0 +1,80 @@
+USE library;
+
+-- Create 'books' table
+CREATE TABLE books (
+    isbn VARCHAR(13) PRIMARY KEY,           -- ISBN of the book
+    title VARCHAR(255) NOT NULL,            -- Title of the book
+    publish_year INT NOT NULL,              -- Year the book was published
+    author_name VARCHAR(100) NOT NULL,      -- Author's first name
+    author_lastname VARCHAR(100) NOT NULL,  -- Author's last name
+    available_copies INT NOT NULL           -- Number of available copies
+);
+
+-- Create 'readers' table
+CREATE TABLE readers (
+    login VARCHAR(100) PRIMARY KEY,         -- Unique login for the reader
+    password VARCHAR(255) NOT NULL,         -- Reader's password
+    nick VARCHAR(100) NOT NULL              -- Reader's nickname
+);
+
+-- Create 'admins' table
+CREATE TABLE admins (
+    login VARCHAR(100) PRIMARY KEY,         -- Unique login for the admin
+    password VARCHAR(255) NOT NULL,         -- Admin's password
+    nick VARCHAR(100) NOT NULL              -- Admin's nickname
+);
+
+-- Create 'borrowed_books' table
+CREATE TABLE borrowed_books (
+    user_login VARCHAR(100),                -- Login of the reader
+    book_isbn VARCHAR(13),                  -- ISBN of the borrowed book
+    book_title VARCHAR(255) NOT NULL,       -- Title of borrowed book (not a foreign key)
+    due_day INT NOT NULL,                   -- Day the book is due back
+    due_month INT NOT NULL,                 -- Month the book is due back
+    due_year INT NOT NULL,                  -- Year the book is due back
+    PRIMARY KEY (user_login, book_isbn, due_year, due_month, due_day), -- Composite key for uniqueness
+    FOREIGN KEY (user_login) REFERENCES readers(login) ON DELETE CASCADE,
+    FOREIGN KEY (book_isbn) REFERENCES books(isbn) ON DELETE CASCADE
+);
+
+-- Create 'renting_history' table
+CREATE TABLE renting_history (
+    user_login VARCHAR(100),
+    book_isbn VARCHAR(13),
+    book_title VARCHAR(255) NOT NULL,       -- Title of rented book (not a foreign key)
+    return_day INT NOT NULL,
+    return_month INT NOT NULL, 
+    return_year INT NOT NULL,
+    PRIMARY KEY (user_login, book_isbn, return_day, return_month, return_year),
+    FOREIGN KEY (user_login) REFERENCES readers(login) ON DELETE CASCADE,
+    FOREIGN KEY (book_isbn) REFERENCES books(isbn) ON DELETE CASCADE
+);
+
+-- Insert sample data into 'books'
+INSERT INTO books (isbn, title, publish_year, author_name, author_lastname, available_copies)
+VALUES 
+('9780134685991', 'Effective Java', 2018, 'Joshua', 'Bloch', 5),
+('9780201485677', 'Design Patterns: Elements of Reusable Object-Oriented Software', 1994, 'Erich', 'Gamma', 3);
+
+-- Insert sample data into 'readers'
+INSERT INTO readers (login, password, nick)
+VALUES 
+('john_doe', 'password123', 'johndoe123'),
+('alice_smith', 'securepass456', 'alice_smith_01');
+
+-- Insert sample data into 'borrowed_books'
+INSERT INTO borrowed_books (user_login, book_isbn, book_title, due_day, due_month, due_year)
+VALUES 
+('john_doe', '9780134685991', 'Effective Java', 15, 12, 2024),
+('alice_smith', '9780201485677', 'Design Patterns: Elements of Reusable Object-Oriented Software', 20, 12, 2024);
+
+-- Insert sample data into 'renting_history'
+INSERT INTO renting_history (user_login, book_isbn, book_title, return_day, return_month, return_year)
+VALUES
+('john_doe', '9780201485677', 'Design Patterns: Elements of Reusable Object-Oriented Software', 11, 11, 2024);
+
+-- Insert sample data into 'admins'
+INSERT INTO admins (login, password, nick)
+VALUES 
+('admin_1', 'adminpass123', 'admin_jane'),
+('admin_2', 'adminpass456', 'admin_john');
