@@ -39,3 +39,41 @@ public:
         std::cout << "Admin: Displaying admin information" << std::endl;
     }
 };
+```
+## Database Connection: MySQL & Singleton Pattern
+To store data in the project, we use a **MySQL** database for persistent storage. The system connects to the database via the **Singleton Pattern**, ensuring that only a single instance of the database connection exists throughout the application.
+
+### Singleton Pattern
+The **Singleton Pattern** ensures that there is only one instance of the database connection, preventing multiple instances from consuming unnecessary resources.
+
+**Example of Singleton Database Connection:**
+```cpp
+class Database {
+private:
+    static Database* instance;
+    MYSQL* connection;
+    
+    // Private constructor
+    Database() {
+        connection = mysql_init(NULL);
+        mysql_real_connect(connection, "localhost", "root", "password", "library", 0, NULL, 0);
+    }
+
+public:
+    static Database* getInstance() {
+        if (!instance) {
+            instance = new Database();
+        }
+        return instance;
+    }
+
+    MYSQL* getConnection() {
+        return connection;
+    }
+};
+
+// Initialize static member
+Database* Database::instance = nullptr;
+```
+## Unit Testing
+TODO
