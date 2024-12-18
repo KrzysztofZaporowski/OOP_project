@@ -4,7 +4,7 @@ In this project, we designed a **Library Management System** using **Object-Orie
 
 ## Key Classes and Inheritance
 
-The system is built around several core classes, each handling specific aspects of library management.
+The system is built around several core classes, each handling specific aspects of library management. Example of class connection below.
 
 ### User Class (Base Class)
 The `User` class is the base class for all types of users in the system. It contains common attributes and methods for user management.
