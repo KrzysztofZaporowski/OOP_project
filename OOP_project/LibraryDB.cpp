@@ -1,5 +1,35 @@
 #include "LibraryDB.h"
 
+std::unique_ptr<LibraryDB> LibraryDB::instance = nullptr;
+std::once_flag LibraryDB::initFlag;
+
+LibraryDB& LibraryDB::getInstance(const std::string& username,
+    const std::string& password,
+    const std::string& databaseName,
+    const std::string& tableBooksName,
+    const std::string& tableReadersName,
+    const std::string& tableAdminsName,
+    const std::string& rentingHistorytableName,
+    const std::string& borrowedBooksTableName) {
+    std::call_once(initFlag, [&]() {
+        instance.reset(new LibraryDB(username, password, databaseName, tableBooksName, tableReadersName, tableAdminsName, rentingHistorytableName, borrowedBooksTableName));
+        });
+    return *instance;
+}
+
+LibraryDB::LibraryDB(const std::string& username,
+    const std::string& password,
+    const std::string& databaseName,
+    const std::string& tableBooksName,
+    const std::string& tableReadersName,
+    const std::string& tableAdminsName,
+    const std::string& rentingHistorytableName,
+    const std::string& borrowedBooksTableName)
+    : username(username), password(password), databaseName(databaseName),
+    tableBooksName(tableBooksName), tableReadersName(tableReadersName),
+    tableAdminsName(tableAdminsName), rentingHistorytableName(rentingHistorytableName),
+    borrowedBooksTableName(borrowedBooksTableName) {}
+
 void LibraryDB::loadData() {
     try {
         sql::mysql::MySQL_Driver* driver = sql::mysql::get_mysql_driver_instance();
@@ -81,10 +111,6 @@ void LibraryDB::loadData() {
             << std::endl;
     }
 }
-
-LibraryDB::LibraryDB(std::string username, std::string password, std::string databaseName, std::string tableBooksName, std::string tableReadersName, std::string tableAdminsName, std::string rentingHistorytableName, std::string borrowedBooksTableName)
-    : username(username), password(password), databaseName(databaseName),
-    tableBooksName(tableBooksName), tableReadersName(tableReadersName), tableAdminsName(tableAdminsName), rentingHistorytableName(rentingHistorytableName), borrowedBooksTableName(borrowedBooksTableName){}
 
 std::vector<Book> LibraryDB::getBooks(){
 	return books;

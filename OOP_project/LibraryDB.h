@@ -7,6 +7,7 @@
 #include <cppconn/resultset.h>
 #include <cppconn/exception.h>
 #include <string>
+#include <mutex>
 #include "User.h"
 #include "Book.h"
 #include "Reader.h"
@@ -16,8 +17,6 @@
 
 class LibraryDB{
 public:
-	LibraryDB(std::string username, std::string password, std::string databaseName, std::string tableBooksName, std::string tableReadersName,
-		std::string tableAdminsName, std::string rentingHistorytableName, std::string borrowedBooksTableName);
 	struct Item {
 		std::string login;
 		std::string isbn;
@@ -34,6 +33,17 @@ public:
 				year == other.year;
 		}
 	};
+
+	// Get the Singleton instance with default MySQL connection data
+	static LibraryDB& getInstance(const std::string& username = "root",
+		const std::string& password = "Krzysiu13",
+		const std::string& databaseName = "library",
+		const std::string& tableBooksName = "books",
+		const std::string& tableReadersName = "readers",
+		const std::string& tableAdminsName = "admins",
+		const std::string& rentingHistoryTableName = "renting_history",
+		const std::string& borrowedBooksTableName = "borrowed_books");
+
 	void loadData();
 	std::vector<Book> getBooks();
 	std::vector<Admin> getAdmins();
@@ -46,6 +56,24 @@ public:
 	void saveToRentingHistoryTable(std::vector<Item>& renting);
 	void saveToBorrowedBooksTable(std::vector<Item>& borrowed);
 private:
+	// Private constructor
+	LibraryDB(const std::string& username,
+		const std::string& password,
+		const std::string& databaseName,
+		const std::string& tableBooksName,
+		const std::string& tableReadersName,
+		const std::string& tableAdminsName,
+		const std::string& rentingHistoryTableName,
+		const std::string& borrowedBooksTableName);
+
+	// Prevent copying
+	LibraryDB(const LibraryDB&) = delete;
+	LibraryDB& operator=(const LibraryDB&) = delete;
+
+	// Singleton instance
+	static std::unique_ptr<LibraryDB> instance;
+	static std::once_flag initFlag;
+
 	std::vector<Book> books;
 	std::vector<Admin> admins;
 	std::vector<Reader> readers;
@@ -60,4 +88,3 @@ private:
 	std::string rentingHistorytableName;
 	std::string borrowedBooksTableName;
 };
-

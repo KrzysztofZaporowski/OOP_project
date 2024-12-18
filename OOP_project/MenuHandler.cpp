@@ -4,7 +4,8 @@ MenuHandler::MenuHandler(){}
 
 void MenuHandler::menu(){
 	int choice;
-	LibraryDB libraryDB("root", "Krzysiu13", "library", "books", "readers", "admins", "renting_history", "borrowed_books");
+	// UPDATE : after adding SINGLETON PATTERN we use method getInstance() instead of normal constructor to inicialize libraryDB
+	LibraryDB& libraryDB = LibraryDB::getInstance();
 	libraryDB.loadData();
 	std::vector<Book> books = libraryDB.getBooks();
 	std::vector<Reader> readers = libraryDB.getReaders();
@@ -301,6 +302,15 @@ void MenuHandler::readerOperations(std::vector<Book>& books, Reader& reader, std
 				<< "To quit enter '5'" << std::endl
 				<< "Your choice: ";
 			std::cin >> searchType;
+			if (std::cin.fail()) {
+				std::cout << "Invalid input! Please enter a number." << std::endl;
+
+				std::cin.clear();
+
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+				continue;
+			}
 			std::cout << std::endl;
 
 			switch (searchType) {
@@ -452,6 +462,15 @@ void MenuHandler::adminOperations(std::vector<Reader>& readers, std::vector<Admi
 			int youSure;
 			std::cout << "Are you sure you want to add new reader? (1 - Yes / 2 - No)" << std::endl;
 			std::cin >> youSure;
+			if (std::cin.fail()) {
+				std::cout << "Invalid input! Please enter a number." << std::endl;
+
+				std::cin.clear();
+
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+				continue;
+			}
 			if (youSure == 1) {
 				std::cout << "Enter reader login, passoword and nick of new reader (separated by space)" << std::endl;
 				std::cin >> login >> password >> nick;
@@ -471,6 +490,15 @@ void MenuHandler::adminOperations(std::vector<Reader>& readers, std::vector<Admi
 		case 2:
 			std::cout << "Are you sure you want to delete reader? (1 - Yes / 2 - No)" << std::endl;
 			std::cin >> youSure;
+			if (std::cin.fail()) {
+				std::cout << "Invalid input! Please enter a number." << std::endl;
+
+				std::cin.clear();
+
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+				continue;
+			}
 			if (youSure == 1) {
 				std::cout << "Enter reader login, passoword and nick of reader you want to delete (separated by space)" << std::endl;
 				std::cin >> login >> password >> nick;
@@ -490,6 +518,15 @@ void MenuHandler::adminOperations(std::vector<Reader>& readers, std::vector<Admi
 		case 3:
 			std::cout << "Are you sure you want to add new admin? (1 - Yes / 2 - No)" << std::endl;
 			std::cin >> youSure;
+			if (std::cin.fail()) {
+				std::cout << "Invalid input! Please enter a number." << std::endl;
+
+				std::cin.clear();
+
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+				continue;
+			}
 			if (youSure == 1) {
 				std::cout << "Enter reader login, passoword and nick of new admin (separated by space)" << std::endl;
 				std::cin >> login >> password >> nick;
@@ -509,6 +546,15 @@ void MenuHandler::adminOperations(std::vector<Reader>& readers, std::vector<Admi
 		case 4:
 			std::cout << "Are you sure you want to delete admin? (1 - Yes / 2 - No)" << std::endl;
 			std::cin >> youSure;
+			if (std::cin.fail()) {
+				std::cout << "Invalid input! Please enter a number." << std::endl;
+
+				std::cin.clear();
+
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+				continue;
+			}
 			if (youSure == 1) {
 				std::cout << "Enter reader login, passoword and nick of admin you want to delete (separated by space)" << std::endl;
 				std::cin >> login >> password >> nick;
