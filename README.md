@@ -23,7 +23,7 @@ All three classes implement a **virtual method** called `displayInfo()`, showcas
 ```cpp
 class User {
 public:
-    virtual void displayInfo() = 0; // Pure virtual method
+    virtual void displayInfo(); //virtual method
 };
 
 class Reader : public User {
