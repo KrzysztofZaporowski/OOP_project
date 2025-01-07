@@ -4,6 +4,7 @@
 #include "User.h"
 #include "Reader.h"
 
+
 class Admin : public User{
 public:
 	Admin(std::string login, std::string password, std::string nickname);

@@ -141,6 +141,7 @@
     <ClCompile Include="LibraryDB.cpp" />
     <ClCompile Include="MenuHandler.cpp" />
     <ClCompile Include="Reader.cpp" />
+    <ClCompile Include="UnitTests.cpp" />
     <ClCompile Include="User.cpp" />
     <ClCompile Include="Źródło.cpp" />
   </ItemGroup>
@@ -150,6 +151,7 @@
     <ClInclude Include="LibraryDB.h" />
     <ClInclude Include="MenuHandler.h" />
     <ClInclude Include="Reader.h" />
+    <ClInclude Include="UnitTests.h" />
     <ClInclude Include="User.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
