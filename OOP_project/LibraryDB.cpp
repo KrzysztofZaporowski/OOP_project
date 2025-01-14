@@ -1,8 +1,10 @@
 #include "LibraryDB.h"
 
+// Initialize the static members of the LibraryDB class.
 std::unique_ptr<LibraryDB> LibraryDB::instance = nullptr;
 std::once_flag LibraryDB::initFlag;
 
+// Returns the singleton instance of the LibraryDB class. Initializes the instance if it doesn't already exist.
 LibraryDB& LibraryDB::getInstance(const std::string& username,
     const std::string& password,
     const std::string& databaseName,
@@ -17,6 +19,7 @@ LibraryDB& LibraryDB::getInstance(const std::string& username,
     return *instance;
 }
 
+// Constructor for the LibraryDB class. Initializes member variables with database credentials and table names.
 LibraryDB::LibraryDB(const std::string& username,
     const std::string& password,
     const std::string& databaseName,
@@ -30,8 +33,10 @@ LibraryDB::LibraryDB(const std::string& username,
     tableAdminsName(tableAdminsName), rentingHistorytableName(rentingHistorytableName),
     borrowedBooksTableName(borrowedBooksTableName) {}
 
+// Loads data from the database into in-memory data structures for books, readers, admins, borrowed books, and renting history.
 void LibraryDB::loadData() {
     try {
+	// Get the MySQL driver instance and establish a connection to the database.
         sql::mysql::MySQL_Driver* driver = sql::mysql::get_mysql_driver_instance();
 
         std::unique_ptr<sql::Connection> con(
@@ -42,7 +47,7 @@ void LibraryDB::loadData() {
 
         std::unique_ptr<sql::Statement> stmt(con->createStatement());
 
-        // Load books
+        // Load books data from the database and populate the books vector.
         std::unique_ptr<sql::ResultSet> resBooks(stmt->executeQuery("SELECT * FROM " + tableBooksName));
         while (resBooks->next()) {
             std::string isbn = resBooks->getString("isbn");
@@ -56,7 +61,7 @@ void LibraryDB::loadData() {
             books.push_back(book);
         }
 
-        // Load readers
+        // Load readers data from the database and populate the readers vector.
         std::unique_ptr<sql::ResultSet> resReaders(stmt->executeQuery("SELECT * FROM " + tableReadersName));
         while (resReaders->next()) {
             std::string login = resReaders->getString("login");
@@ -67,7 +72,7 @@ void LibraryDB::loadData() {
             readers.push_back(reader);
         }
 
-        // Load admins
+        // Load admins data from the database and populate the admins vector.
         std::unique_ptr<sql::ResultSet> resAdmins(stmt->executeQuery("SELECT * FROM " + tableAdminsName));
         while (resAdmins->next()) {
             std::string login = resAdmins->getString("login");
@@ -78,7 +83,7 @@ void LibraryDB::loadData() {
             admins.push_back(admin);
         }
 
-        // Load borrowed books
+        // Load borrowed books data from the database and populate the borrowedBooks vector.
         std::unique_ptr<sql::ResultSet> resBorrowed(stmt->executeQuery("SELECT * FROM " + borrowedBooksTableName));
         while (resBorrowed->next()) {
             std::string user_login = resBorrowed->getString("user_login");
@@ -91,7 +96,7 @@ void LibraryDB::loadData() {
             borrowedBooks.push_back({ user_login, book_isbn, book_title, due_day, due_month, due_year });
         }
 
-        // Load renting history
+        // Load renting history data from the database and populate the rentingHistory vector.
         std::unique_ptr<sql::ResultSet> resHistory(stmt->executeQuery("SELECT * FROM " + rentingHistorytableName));
         while (resHistory->next()) {
             std::string user_login = resHistory->getString("user_login");
@@ -105,6 +110,7 @@ void LibraryDB::loadData() {
         }
     }
     catch (sql::SQLException& e) {
+        // Handle SQL exceptions by printing the error message.
         std::cerr << "Error: " << e.what()
             << " (MySQL error code: " << e.getErrorCode()
             << ", SQLState: " << e.getSQLState() << ")"
@@ -112,6 +118,7 @@ void LibraryDB::loadData() {
     }
 }
 
+// Getters for various data members.
 std::vector<Book> LibraryDB::getBooks(){
 	return books;
 }
@@ -132,6 +139,7 @@ std::vector<LibraryDB::Item> LibraryDB::getBorrowedBooks(){
     return borrowedBooks;
 }
 
+// Save books to the database by clearing the table and inserting all books in the vector.
 void LibraryDB::saveBooksToDB(std::vector<Book>& books) {
     try {
         sql::mysql::MySQL_Driver* driver = sql::mysql::get_mysql_driver_instance();
@@ -165,6 +173,7 @@ void LibraryDB::saveBooksToDB(std::vector<Book>& books) {
     }
 }
 
+// Similar saving methods for admins, readers, renting history, and borrowed books tables follow.
 
 void LibraryDB::saveAdminsToDB(std::vector<Admin>& admins) {
     try {
