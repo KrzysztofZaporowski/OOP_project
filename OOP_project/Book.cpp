@@ -1,8 +1,10 @@
 #include "Book.h"
 
+// Class constructor
 Book::Book(std::string isbn, std::string title, std::string authorName, std::string authorLastName, int publishYear, int availableCopies) : 
 	isbn(isbn), title(title), authorName(authorName), authorLastName(authorLastName), publishYear(publishYear), availableCopies(availableCopies){}
 
+// Basic getters (and setter for setting copies)
 std::string Book::getISBN() const{
 	return isbn;
 }
@@ -31,6 +33,7 @@ void Book::setAvailableCopies(int amount){
 	availableCopies = amount;
 }
 
+// Function to display info
 void Book::displayBookInfo() const{
 	std::cout << "Book info:" << std::endl <<
 		"Title: " << title << std::endl <<
