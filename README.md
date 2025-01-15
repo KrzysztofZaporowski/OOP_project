@@ -76,4 +76,39 @@ public:
 Database* Database::instance = nullptr;
 ```
 ## Unit Testing
-TODO
+To avoid logic mistakes we included in this project **Units test**. We use **Google tests** to do this. Firstly we created class `UnitTests` in main project to check if methods works right. Then tests results are saved in file. Then in second project results are read from file and **Google tests** check if result are as expected.
+**Example of setting copies amount test**
+```
+bool UnitTests::adminSetCopiesFailure() {
+    //ignore couts
+    std::streambuf* originalCoutStream = std::cout.rdbuf();
+    std::ostringstream nullStream;
+    std::cout.rdbuf(nullStream.rdbuf());
+
+    Admin admin("test", "test", "test");
+    Book book("1234567891234", "Test title", "Name", "Lastname", 2024, 5);
+    int amount = -3;
+    admin.updateBookCopiesNumber(book, amount);
+    std::cout.rdbuf(originalCoutStream);
+    if (book.getAvailableCopies() == amount) {
+        return true;
+    }
+    return false;
+}
+```
+This is a part of the code is from `UnitTests.cpp` file.
+
+Results from file are stored in vector and then we check if code pass tests.
+
+**Example of Google tests**
+```
+// Setting copies amount tests
+TEST(setCopiesTest, setCopiesTestSuccess) {
+    bool instance = data[8];
+    EXPECT_TRUE(instance) << "Set book copies test (success) failed";
+}
+TEST(setCopiesTest, setCopiesTestFailure) {
+    bool instance = data[9];
+    EXPECT_FALSE(instance) << "Set book copies test (failure) failed";
+}
+```
